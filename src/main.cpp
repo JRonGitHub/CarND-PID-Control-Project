@@ -29,7 +29,7 @@ string hasData(string s) {
   }
   return "";
 }
-double on_or_off = 0;
+double on = 0;
 int main(int argc, char *argv[]) {
   uWS::Hub h;
 
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
           //works well with or without the throttle limit activated by cte threshold
           double throttle = 0.3;
           
-          if (on_or_off > 0)
+          if (on > 0)
           {
             if (speed > 22)
             {
