@@ -29,14 +29,22 @@ string hasData(string s) {
   }
   return "";
 }
-
-int main() {
+double on_or_off = 0;
+int main(int argc, char *argv[]) {
   uWS::Hub h;
 
   PID pid;
   /**
    * TODO: Initialize the pid variable.
    */
+  double init_Kp = -0.1585734579; //atof(argv[1]);
+  //as long as the Ki coefficient is 0 the code is effectively acting like a PD controller - hower it is ready to be used as a full
+  //PID controller as soon as the Ki coeffient is set to an appropriate value
+  double init_Ki = 0;
+  double init_Kd = -3.1312509606;
+  on_or_off = atof(argv[1]);
+
+  pid.Init(init_Kp, init_Ki, init_Kd);
 
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
                      uWS::OpCode opCode) {
@@ -63,14 +71,28 @@ int main() {
            * NOTE: Feel free to play around with the throttle and speed.
            *   Maybe use another PID controller to control the speed!
            */
+
+          //works well with or without the throttle limit activated by cte threshold
+          double throttle = 0.3;
           
+          if (on_or_off > 0)
+          {
+            if (speed > 22)
+            {
+              throttle = 0;
+            }
+          }
+        
+          pid.UpdateError(cte);
+          steer_value = pid.TotalError();
+
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value 
                     << std::endl;
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
-          msgJson["throttle"] = 0.3;
+          msgJson["throttle"] = throttle;//0.3;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
