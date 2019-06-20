@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
   //PID controller as soon as the Ki coeffient is set to an appropriate value
   double init_Ki = 0;
   double init_Kd = -3.1312509606;
-  on_or_off = atof(argv[1]);
+  on = atof(argv[1]);
 
   pid.Init(init_Kp, init_Ki, init_Kd);
 
